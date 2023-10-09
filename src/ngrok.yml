@@ -1,0 +1,12 @@
+version: "2"
+region: us
+authtoken: <%= process.env.NGROK_AUTHTOKEN %>
+tunnels:
+    website:
+        proto: http
+        addr: 5173
+        subdomain: <%= process.env.NGROK_SUBDOMAIN %>
+    surrealdb:
+        proto: http
+        addr: 8000
+        subdomain: <%= process.env.NGROK_SUBDOMAIN %>db
