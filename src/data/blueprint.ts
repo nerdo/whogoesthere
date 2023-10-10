@@ -6,7 +6,7 @@ export interface DataLayer {
 }
 
 export interface AuthService {
-  authenticate: (name: string) => Promise<Person>
+  authenticate: (person: Omit<Person, 'id'>) => Promise<Person>
 }
 
 export interface LeaveFunction {
@@ -23,6 +23,7 @@ export interface WhosHereService {
 export const zPerson = z.object({
   id: z.string(),
   name: z.string(),
+  avatarUrl: z.optional(z.string().url().nullable()),
 })
 
 export type Person = z.infer<typeof zPerson>

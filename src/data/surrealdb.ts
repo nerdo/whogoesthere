@@ -53,7 +53,7 @@ const whosHere: WhosHereService = {
   },
   async listen(path, onUpdate) {
     await dbConnect()
-    const liveQueryResults = z.array(zQueryResult).parse(await db.query(`LIVE SELECT id, in.name as name FROM is_visiting where out = page:\`${path}\``))
+    const liveQueryResults = z.array(zQueryResult).parse(await db.query(`LIVE SELECT id, in.name as name, in.avatarUrl as avatarUrl FROM is_visiting where out = page:\`${path}\``))
     const liveQueryId = z.string().parse(liveQueryResults[0]?.result)
 
     let buffer: Person[] = []
@@ -77,7 +77,7 @@ const whosHere: WhosHereService = {
       onUpdate(buffer)
     })
 
-    const queryResults = z.array(zQueryResult).parse(await db.query(`SELECT id, in.name as name FROM is_visiting where out = page:\`${path}\``))
+    const queryResults = z.array(zQueryResult).parse(await db.query(`SELECT id, in.name as name, in.avatarUrl as avatarUrl FROM is_visiting where out = page:\`${path}\``))
     buffer = z.array(zPerson).parse(queryResults[0]?.result)
     sortBuffer()
     onUpdate(buffer)
@@ -87,11 +87,10 @@ const whosHere: WhosHereService = {
 }
 
 const auth: AuthService = {
-  async authenticate(name) {
+  async authenticate(newPerson) {
     await dbConnect()
-    const [result] = await db.create('user', { name })
-    const person: Person = { id: result.id, name: result.name }
-    return person
+    const [result] = await db.create('user', newPerson)
+    return result
   },
 }
 
