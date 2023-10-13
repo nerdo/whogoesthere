@@ -53,6 +53,9 @@ const whosHere: WhosHereService = {
   },
   async listen(path, onUpdate) {
     await dbConnect()
+
+    // Note: this is vulnerable to SQL injection attacks.
+    // The SurrealDB client does allow for query to use variables, but it doesn't seem to work with a LIVE SELECT query.
     const liveQueryResults = z
       .array(zQueryResult)
       .parse(await db.query(`LIVE SELECT id, in.name as name, in.avatarUrl as avatarUrl FROM isVisiting where out = page:\`${path}\``))
@@ -79,9 +82,11 @@ const whosHere: WhosHereService = {
       onUpdate(buffer)
     })
 
-    const queryResults = z
-      .array(zQueryResult)
-      .parse(await db.query(`SELECT id, in.name as name, in.avatarUrl as avatarUrl FROM isVisiting where out = page:\`${path}\``))
+    const queryResults = z.array(zQueryResult).parse(
+      await db.query(`SELECT id, in.name as name, in.avatarUrl as avatarUrl FROM isVisiting where out = $page`, {
+        page: `page:\`${path}\``,
+      })
+    )
     buffer = z.array(zPerson).parse(queryResults[0]?.result)
     sortBuffer()
     onUpdate(buffer)
