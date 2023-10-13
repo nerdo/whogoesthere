@@ -11,7 +11,7 @@ export const Layout = (props: LayoutProps) => {
   return (
     <>
       <div className="flex bg-white pt-16 p-16">
-        <aside className="fixed h-full top-0 left-10 pt-16 flex lg:flex flex-shrink-0 flex-col w-64">
+        <aside className="fixed h-full top-0 left-10 pt-16 flex lg:flex flex-shrink-0 flex-col w-32">
           <nav>
             <ol>
               <li>
@@ -26,7 +26,7 @@ export const Layout = (props: LayoutProps) => {
             </ol>
           </nav>
         </aside>
-        <main className="h-full w-full bg-gray-50 relative overflow-y-auto lg:ml-64">{children}</main>
+        <main className="h-full w-full relative overflow-y-auto ml-32">{children}</main>
       </div>
     </>
   )

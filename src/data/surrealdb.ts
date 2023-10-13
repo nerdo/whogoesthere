@@ -40,7 +40,7 @@ const whosHere: WhosHereService = {
     await dbConnect()
     const queryResults = z
       .array(zQueryResult)
-      .parse(await db.query('RELATE ONLY $personId->is_visiting->$page', { personId: person.id, page: `page:\`${path}\`` }))
+      .parse(await db.query('RELATE ONLY $personId->isVisiting->$page', { personId: person.id, page: `page:\`${path}\`` }))
     const relation = zRelationResponse.parse(queryResults[0].result)
 
     return async () => {
@@ -53,7 +53,9 @@ const whosHere: WhosHereService = {
   },
   async listen(path, onUpdate) {
     await dbConnect()
-    const liveQueryResults = z.array(zQueryResult).parse(await db.query(`LIVE SELECT id, in.name as name, in.avatarUrl as avatarUrl FROM is_visiting where out = page:\`${path}\``))
+    const liveQueryResults = z
+      .array(zQueryResult)
+      .parse(await db.query(`LIVE SELECT id, in.name as name, in.avatarUrl as avatarUrl FROM isVisiting where out = page:\`${path}\``))
     const liveQueryId = z.string().parse(liveQueryResults[0]?.result)
 
     let buffer: Person[] = []
@@ -61,7 +63,7 @@ const whosHere: WhosHereService = {
     db.listenLive(liveQueryId, (incoming) => {
       const event = zListenLiveEvent.parse(incoming)
       if (event.action === 'CLOSE') {
-        return async () => { }
+        return async () => {}
       }
       if (event.action === 'DELETE') {
         const id = z.string().parse(event.result)
@@ -77,7 +79,9 @@ const whosHere: WhosHereService = {
       onUpdate(buffer)
     })
 
-    const queryResults = z.array(zQueryResult).parse(await db.query(`SELECT id, in.name as name, in.avatarUrl as avatarUrl FROM is_visiting where out = page:\`${path}\``))
+    const queryResults = z
+      .array(zQueryResult)
+      .parse(await db.query(`SELECT id, in.name as name, in.avatarUrl as avatarUrl FROM isVisiting where out = page:\`${path}\``))
     buffer = z.array(zPerson).parse(queryResults[0]?.result)
     sortBuffer()
     onUpdate(buffer)
