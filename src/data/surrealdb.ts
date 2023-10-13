@@ -98,8 +98,26 @@ const whosHere: WhosHereService = {
 const auth: AuthService = {
   async authenticate(newPerson) {
     await dbConnect()
-    const [result] = await db.create('user', newPerson)
-    return result
+
+    // const [person] = await db.create('user', newPerson)
+
+    // Tinkering with doing an upsert...
+    const queryResults = z.array(zQueryResult).parse(
+      await db.query(
+        `
+          LET $user = (SELECT * FROM ONLY user where name = $name LIMIT 1);
+          IF $user THEN
+            (RETURN UPDATE $user SET avatarUrl = $avatarUrl) 
+          ELSE 
+            (RETURN CREATE user CONTENT { name: $name, avatarUrl: $avatarUrl })
+          END;
+        `,
+        { ...newPerson }
+      )
+    )
+    const [person] = z.array(zPerson).parse(queryResults[1]?.result)
+
+    return person
   },
 }
 
