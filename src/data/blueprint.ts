@@ -9,12 +9,6 @@ export interface AuthService {
   authenticate: (person: Omit<Person, 'id'>) => Promise<Person>
 }
 
-export interface LeaveFunction {
-  (): Promise<any>
-}
-
-export type ForgetFunction = LeaveFunction
-
 export interface WhosHereService {
   enter: (path: string, person: Person) => Promise<LeaveFunction>
   listen: (path: string, onUpdate: (people: Person[]) => any) => Promise<ForgetFunction>
@@ -27,3 +21,9 @@ export const zPerson = z.object({
 })
 
 export type Person = z.infer<typeof zPerson>
+
+export interface LeaveFunction {
+  (): Promise<any>
+}
+
+export type ForgetFunction = LeaveFunction
