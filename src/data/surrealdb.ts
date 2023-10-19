@@ -1,4 +1,4 @@
-import { AuthService, DataLayer, Person, WhosHereService, zPerson } from './blueprint'
+import { AuthService, Blueprint, Person, WhosHereService, zPerson } from './blueprint'
 import { Surreal } from 'surrealdb.js'
 import { z } from 'zod'
 
@@ -121,7 +121,9 @@ const auth: AuthService = {
   },
 }
 
-export const dataLayer: DataLayer = {
+export const app: Blueprint = {
   auth,
   whosHere,
 }
+
+export default app

@@ -1,7 +1,6 @@
-import { Person } from '../data/blueprint'
-import { dataLayer } from '../data'
-import { useInitializer, useOnPageLeave } from '../hooks'
-import { useAuth } from './Auth'
+import { Person, app } from '../data'
+import { useAuth } from '../state'
+import { useInitializer, useOnPageLeave } from '../behaviors'
 import { useState } from 'react'
 import './WhosHere.css'
 
@@ -18,7 +17,7 @@ export const WhosHere = (props: WhosHereProps) => {
       <ol className="pl-5">
         {whosHere.people.map((visitor) => (
           <li key={visitor.id} className="flex items-center my-3 text-lg animate-blip">
-            <img src={visitor.avatarUrl || 'assets/user.png'} className='w-10 aspect-square mr-2 rounded-full' />
+            <img src={visitor.avatarUrl || 'assets/user.png'} className="w-10 aspect-square mr-2 rounded-full" />
             {visitor.name}
           </li>
         ))}
@@ -32,8 +31,8 @@ const useWhosHere = (settings: WhosHereProps) => {
   const [people, setPeople] = useState<Person[]>([])
   const [alreadyCleanedUp, setAlreadyCleanedUp] = useState(false)
 
-  let leave: Awaited<ReturnType<typeof dataLayer.whosHere.enter>> | undefined
-  let forget: Awaited<ReturnType<typeof dataLayer.whosHere.listen>> | undefined
+  let leave: Awaited<ReturnType<typeof app.whosHere.enter>> | undefined
+  let forget: Awaited<ReturnType<typeof app.whosHere.listen>> | undefined
   const cleanup = () => {
     if (alreadyCleanedUp) {
       return
@@ -48,11 +47,11 @@ const useWhosHere = (settings: WhosHereProps) => {
   }
 
   useInitializer(() => {
-    ; (async () => {
-      leave = await dataLayer.whosHere.enter(settings.path, auth.person!)
+    ;(async () => {
+      leave = await app.whosHere.enter(settings.path, auth.person!)
 
       const onUpdatePeople = (updatedPeople: Person[]) => setPeople(updatedPeople)
-      forget = await dataLayer.whosHere.listen(settings.path, onUpdatePeople)
+      forget = await app.whosHere.listen(settings.path, onUpdatePeople)
     })()
 
     return cleanup

@@ -1,14 +1,9 @@
-import { Person, dataLayer } from '../data'
-import { create } from 'zustand'
+import { app } from '../data'
+import { useAuth } from '../state'
 import { ReactNode, useState } from 'react'
 
 export interface AuthProps {
   children?: ReactNode
-}
-
-export interface AuthState {
-  person?: Person
-  setPerson: (person: Person) => void
 }
 
 export const Auth = (props: AuthProps) => {
@@ -27,13 +22,13 @@ export const Auth = (props: AuthProps) => {
         <form
           onSubmit={(e) => {
             e.preventDefault()
-              ; (async () => {
-                const person = await dataLayer.auth.authenticate({
-                  name,
-                  avatarUrl: avatarUrl === '' ? undefined : avatarUrl,
-                })
-                auth.setPerson(person)
-              })()
+            ;(async () => {
+              const person = await app.auth.authenticate({
+                name,
+                avatarUrl: avatarUrl === '' ? undefined : avatarUrl,
+              })
+              auth.setPerson(person)
+            })()
           }}
         >
           <ul>
@@ -52,8 +47,3 @@ export const Auth = (props: AuthProps) => {
     </>
   )
 }
-
-export const useAuth = create<AuthState>()((set) => ({
-  person: undefined,
-  setPerson: (person) => set({ person }),
-}))

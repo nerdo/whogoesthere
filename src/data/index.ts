@@ -1,2 +1,2 @@
 export * from './blueprint'
-export { dataLayer } from './surrealdb'
+export { app } from './surrealdb'
